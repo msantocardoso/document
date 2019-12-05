@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+management:
+  endpoint:
+    health:
+      enabled: true
+
+spring:
+  data:
+    mongodb:
+      database: document
+      uri: mongodb://mongo0:27017,mongo1:27018,mongo2:27019/?replicaSet=rs0&retryWrites=true
