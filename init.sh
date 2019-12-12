@@ -13,8 +13,8 @@ case "$COMMAND" in
   migrate|web)
     exec java ${JVM_OPS} -Duser.Timezone=America/Sao_Paulo \
       -Dspring.profiles.active=${ENVIRONMENT_NAME} \
-      -Dspring.datasource.url=${DATABASE_URL} \
-      -jar /app/document-*.jar \
+      -Dspring.data.mongodb.uri=${MONGODB_URI} \
+      -jar $BINARY_DIR/document-*.jar \
       $COMMAND
     ;;
   *)

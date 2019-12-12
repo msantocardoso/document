@@ -1,16 +1,11 @@
 FROM gradle:5.4.1-alpine as builder
-
+MAINTAINER Murilo Cardoso
 USER root
 
-ENV APP_DIR /app
-WORKDIR $APP_DIR
+ENV SOURCE_DIR /var/source
+WORKDIR $SOURCE_DIR
 
-COPY build.gradle.kts $APP_DIR/
-COPY settings.gradle.kts $APP_DIR/
-
-RUN apk add --no-cache curl
-
-COPY . $APP_DIR
+COPY . $SOURCE_DIR
 
 RUN gradle build -x test
 
@@ -20,10 +15,13 @@ FROM openjdk:12-alpine3.9
 
 RUN apk add --no-cache tini
 
-WORKDIR /app
+ENV SOURCE_DIR /var/source
+ENV BINARY_DIR /var/bin
 
-COPY --from=builder /app/init.sh /app
-COPY --from=builder /app/build/libs/document-*.jar /app/
+WORKDIR $BINARY_DIR
+
+COPY --from=builder $SOURCE_DIR/init.sh $BINARY_DIR
+COPY --from=builder $SOURCE_DIR/build/libs/document-*.jar $BINARY_DIR
 
 EXPOSE 8080
 

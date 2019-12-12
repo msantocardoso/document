@@ -4,6 +4,7 @@ services:
   mongo0:
     image: mongo:4.2
     hostname: mongo0
+    container_name: mongo0
     restart: always
     command: /usr/bin/mongod --bind_ip_all --replSet rs0 --port 27017
     ports:
@@ -14,30 +15,35 @@ services:
   mongo1:
     image: mongo:4.2
     hostname: mongo1
+    container_name: mongo1
     restart: always
     command: /usr/bin/mongod --bind_ip_all --replSet rs0 --port 27018
     ports:
-      - 27018:27018
+      - 27018:27017
     networks:
       - local
 
   mongo2:
     image: mongo:4.2
     hostname: mongo2
+    container_name: mongo2
     restart: always
     command: /usr/bin/mongod --bind_ip_all --replSet rs0 --port 27019
     ports:
-      - 27019:27019
+      - 27019:27017
     networks:
       - local
 
   document:
     build: .
-    image: document:0.0.1-SNAPSHOT
+    image: cespec/document
+    container_name: document
     hostname: document
     ports:
       - 8080:8080
     init: true
+    environment:
+      - "MONGODB_URI=mongodb://mongo0:27017,mongo1:27018,mongo2:27019/?replicaSet=rs0&retryWrites=true"
     depends_on:
       - mongo0
       - mongo1
